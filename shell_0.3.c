@@ -4,9 +4,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "shell.c"
 
-
-#define MAX_COMMAND_LENGTH 100
 #define MAX_PATH_LENGTH 100
 
 extern char **environ;

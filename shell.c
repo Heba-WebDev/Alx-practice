@@ -5,27 +5,26 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define MAX_COMMAND_LENGTH 100
-
 /**
- * main - Entry point fo program
+ * main -interactive shell
  *
  * Return: 0 (Success)
  */
 
-int main()
+int main(void)
 {
-	char command[MAX_COMMAND_LENGTH];
+	char *command = NULL, *args[2], *token;
+	size_t command_len = 0;
+	int status;
+	pid_t pid = fork();
 
 	while (1)
 	{
 		printf("$ ");
 		fflush(stdout);
 
-		if (fgets(command, sizeof(command), stdin) == NULL)
-		{
+		if (getline(&command, &command_len, stdin) == -1)
 			break;
-		}
 
 		command[strcspn(command, "\n")] = '\0';
 
@@ -33,24 +32,21 @@ int main()
 		{
 			continue;
 		}
-
 		if (strcmp(command, "exit") == 0)
 		{
 			break;
 		}
+		token = strtok(command, " \n");
+		args[0] = token;
+		args[1] = NULL;
 
-		pid_t child_pid = fork();
-
-		if (child_pid < 0)
+		if (pid < 0)
 		{
 			perror("fork");
 			exit(EXIT_FAILURE);
 		}
-
-		else if (child_pid == 0)
+		else if (pid == 0)
 		{
-			char *args[MAX_COMMAND_LENGTH];
-			char *token = strtok(command, " ");
 			int i = 0;
 
 			while (token != NULL)
@@ -59,21 +55,14 @@ int main()
 				i++;
 				token = strtok(NULL, " ");
 			}
-
 			args[i] = NULL;
-
 			execvp(args[0], args);
-			perror("exec");
+			perror("Error");
 			exit(EXIT_FAILURE);
 		}
-
 		else
-		{
-			int status;
-			waitpid(child_pid, &status, 0);
-			printf("\n");
-		}
+			waitpid(pid, &status, 0);
 	}
-
+	free(command);
 	return (0);
 }

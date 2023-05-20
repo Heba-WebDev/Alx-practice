@@ -1,5 +1,6 @@
 #include "shell.h"
-void process(pid_t pid, char **args, int status);
+
+
 /**
  * main - interactive shell
  *
@@ -12,6 +13,7 @@ char *command, *token, *args[1024];
 size_t command_len = 0;
 int i = 0, status = 0;
 pid_t pid;
+
 while (1)
 {
 printf("$ ");
@@ -35,7 +37,7 @@ if (args[0] != NULL && _strcmp(args[0], "exit") == 0)
 {
 break;
 }
-
+handle_path(command);
 pid = fork();
 process(pid, args, status);
 }
@@ -44,29 +46,3 @@ return (0);
 }
 
 
-/**
- * process - creates a new process
- *@pid: the process
- *@args: the array of arguments
- *@status: process id
- * Return: void
- */
-
-void process(pid_t pid, char **args, int status)
-{
-if (pid == -1)
-{
-perror("fork");
-exit(EXIT_FAILURE);
-}
-else if (pid == 0)
-{
-execvp(args[0], args);
-perror("execvp");
-_exit(EXIT_FAILURE);
-}
-else
-{
-waitpid(pid, &status, 0);
-}
-}

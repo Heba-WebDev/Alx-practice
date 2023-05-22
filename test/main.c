@@ -18,28 +18,33 @@ while (1)
 {
 printf("$ ");
 fflush(stdout);
-
 if (getline(&command, &command_len, stdin) == -1)
-{
 break;
-}
 
 token = strtok(command, " \n");
 i = 0;
 while (token != NULL)
 {
+if (token[0] == '#')
+break;
 args[i++] = token;
 token = strtok(NULL, " \n");
 }
 args[i] = NULL;
-
 if (args[0] != NULL && _strcmp(args[0], "exit") == 0)
 {
 break;
 }
 handle_path(command);
+if (args[0] != NULL && _strcmp(args[0], "cd") == 0)
+{
+handle_directory(args);
+}
+else
+{
 pid = fork();
 process(pid, args, status);
+}
 }
 free(command);
 return (0);

@@ -18,7 +18,7 @@ exit(EXIT_FAILURE);
 else if (pid == 0)
 {
 execvp(args[0], args);
-perror("execvp");
+perror("./hsh");
 _exit(EXIT_FAILURE);
 }
 else
